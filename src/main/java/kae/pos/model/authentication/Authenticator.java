@@ -1,0 +1,21 @@
+package kae.pos.model.authentication;
+
+public abstract class Authenticator {
+
+    public final boolean authenticate(String username, String password) {
+
+        if (isLoginExists(username)) {
+
+            String storedPassword = getPassword(username);
+
+            return storedPassword != null &&
+                    storedPassword.equals(password);
+        }
+
+        return false;
+    }
+
+    protected abstract boolean isLoginExists(String username);
+
+    protected abstract String getPassword(String username);
+}
