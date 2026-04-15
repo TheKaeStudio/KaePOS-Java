@@ -44,11 +44,6 @@ public class Main {
         }
     }
 
-    private static void seedData() {
-        Employee admin = new Employee("admin", "1234", Role.MANAGER);
-        users.put(admin.getUsername(), admin);
-    }
-
     private static void createEmployee() {
         System.out.print("Username: ");
         String username = scanner.nextLine();
@@ -142,7 +137,7 @@ public class Main {
             System.out.println("Enter product index (-1 to finish) : ");
             int index = Integer.parseInt(scanner.nextLine());
 
-            if (index == -1) break;
+            if (index < 0) break;
 
             System.out.print("Quantity: ");
             int qty = Integer.parseInt(scanner.nextLine());

@@ -1,5 +1,7 @@
 package kae.pos.model.entity;
 
+import java.util.Objects;
+
 public abstract class User {
     private static int currentId = 1;
 
@@ -50,5 +52,10 @@ public abstract class User {
         if (!(obj instanceof User)) return false;
         User other = (User) obj;
         return this.id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

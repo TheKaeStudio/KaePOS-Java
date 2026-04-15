@@ -19,7 +19,7 @@ public class AuthenticatorTest {
 
         Employee admin = new Employee("admin", "1234", Role.MANAGER);
 
-        users.put("admin", admin);
+        users.put(admin.getUsername(), admin);
 
         Authenticator auth = new MapAuthenticator(users);
 

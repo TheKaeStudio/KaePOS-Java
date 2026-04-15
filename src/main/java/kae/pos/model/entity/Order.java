@@ -3,6 +3,7 @@ package kae.pos.model.entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Order {
 
@@ -62,5 +63,10 @@ public class Order {
 
         Order other = (Order) obj;
         return this.id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

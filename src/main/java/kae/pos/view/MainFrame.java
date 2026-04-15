@@ -126,6 +126,8 @@ public class MainFrame extends JFrame {
                     {"Coca-Cola", "Drinks", "1.80"},
                     {"Lay's Chips", "Snacks", "2.50"},
             });
+            String[] categories = {"Food", "Drinks", "Desserts"};
+            f.getCashierPanel().setCategoryItems(categories);
             f.getTicketPanel().refreshTable(new Object[][]{
                     {1, 3, "7.38"},
                     {2, 5, "21.78"},
@@ -135,9 +137,7 @@ public class MainFrame extends JFrame {
                     {2, "ali", "Cashier"},
             });
 
-            Timer t = new Timer(600, e -> f.applyConnectedState("admin", true));
-            t.setRepeats(false);
-            t.start();
+            f.applyConnectedState("admin", true);
 
             f.setVisible(true);
         });

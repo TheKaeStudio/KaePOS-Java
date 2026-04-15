@@ -35,7 +35,7 @@ public class TicketPanel extends JPanel {
         bottom.add(btnDelete);
 
         add(new JScrollPane(table), BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH);
+        add(bottom, BorderLayout.NORTH);
     }
 
     public void refreshTable(Object[][] data) {
