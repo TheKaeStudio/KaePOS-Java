@@ -1,173 +1,49 @@
 package kae.pos;
 
-import kae.pos.model.authentication.Authenticator;
-import kae.pos.model.authentication.MapAuthenticator;
-import kae.pos.model.entity.*;
+import com.formdev.flatlaf.FlatDarkLaf;
+import kae.pos.controller.*;
+import kae.pos.model.authentication.PropertiesAuthenticator;
+import kae.pos.model.dao.CategoryDao;
+import kae.pos.model.dao.EmployeeDao;
+import kae.pos.model.dao.OrderDao;
+import kae.pos.model.dao.ProductDao;
+import kae.pos.model.entity.Employee;
+import kae.pos.model.entity.Role;
+import kae.pos.view.MainFrame;
 
-import java.util.*;
+import javax.swing.*;
 
 public class Main {
-
-    private static final Scanner scanner = new Scanner(System.in);
-
-    private static final Map<String, User> users = new HashMap<>();
-    private static final List<Category> categories = new ArrayList<>();
-    private static final List<Product> products = new ArrayList<>();
-    private static final List<Order> orders = new ArrayList<>();
-
     public static void main(String[] args) {
+        FlatDarkLaf.setup();
+        SwingUtilities.invokeLater(() -> {
+            MainFrame frame = new MainFrame();
 
-        while (true) {
-            System.out.println("\n1. Login test");
-            System.out.println("2. Create employee");
-            System.out.println("3. Create category");
-            System.out.println("4. Create product");
-            System.out.println("5. Create order");
-            System.out.println("6. List products");
-            System.out.println("7. List orders");
-            System.out.println("0. Quit");
+            CategoryDao categoryDao = new CategoryDao();
+            ProductDao productDao = new ProductDao();
+            OrderDao orderDao = new OrderDao();
+            EmployeeDao employeeDao = new EmployeeDao();
+            PropertiesAuthenticator authenticator = new PropertiesAuthenticator("data/users.properties");
 
-            System.out.print("Choice: ");
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            switch (choice) {
-                case 1 -> testLogin();
-                case 2 -> createEmployee();
-                case 3 -> createCategory();
-                case 4 -> createProduct();
-                case 5 -> createOrder();
-                case 6 -> listProducts();
-                case 7 -> listOrders();
-                case 0 -> { return; }
-                default -> System.out.println("Invalid choice");
+            if (employeeDao.findAll().isEmpty()) {
+                Employee admin = new Employee("admin", "1234", Role.MANAGER);
+                employeeDao.create(admin);
+                authenticator.addUser("admin", "1234");
             }
-        }
-    }
 
-    private static void seedData() {
-        Employee admin = new Employee("admin", "1234", Role.MANAGER);
-        users.put(admin.getUsername(), admin);
-    }
+            new LoginController(frame, authenticator, employeeDao);
+            new AppController(frame);
 
-    private static void createEmployee() {
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
+            TicketController ticketController = new TicketController(frame.getTicketPanel(), orderDao);
+            CashierController cashierController = new CashierController(frame.getCashierPanel(), productDao,
+                    orderDao, categoryDao, ticketController::refreshTable);
 
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
+            new CategoryController(frame, frame.getProductPanel(), categoryDao,
+                    cashierController::refreshCategoryCombo);
+            new ProductController(frame, frame.getProductPanel(), productDao, categoryDao);
+            new EmployeeController(frame, frame.getEmployeePanel(), employeeDao, authenticator);
 
-        System.out.println("Choose role:");
-        for (Role r : Role.values()) {
-            System.out.println("- " + r);
-        }
-
-        String roleInput = scanner.nextLine().toUpperCase();
-        Role role;
-
-        try {
-            role = Role.valueOf(roleInput);
-        } catch (Exception e) {
-            System.out.println("Invalid role");
-            return;
-        }
-
-        Employee e = new Employee(username, password, role);
-        users.put(username, e);
-
-        System.out.println("Employee created: " + e);
-    }
-
-    private static void testLogin() {
-        Authenticator auth = new MapAuthenticator(users);
-
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-
-        boolean result = auth.authenticate(username, password);
-
-        System.out.println(result ? "Login success" : "Login failed");
-    }
-
-    private static void createCategory() {
-        System.out.print("Category name: ");
-        String name = scanner.nextLine();
-
-        Category c = new Category(name);
-        categories.add(c);
-
-        System.out.println("Created: " + c);
-    }
-
-    private static void createProduct() {
-        if (categories.isEmpty()) {
-            System.out.println("No categories yet");
-            return;
-        }
-
-        System.out.print("Product name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Price: ");
-        float price = Float.parseFloat(scanner.nextLine());
-
-        System.out.println("Choose category:");
-
-        for (int i = 0; i < categories.size(); i++) {
-            System.out.println(i + ". " + categories.get(i).getName());
-        }
-
-        int index = Integer.parseInt(scanner.nextLine());
-
-        Category cat = categories.get(index);
-
-        Product p = new Product(name, cat, price);
-
-        products.add(p);
-
-        System.out.println("Product created: " + p);
-    }
-
-    private static void createOrder() {
-
-        Order order = new Order();
-
-        while (true) {
-
-            System.out.println("\n--- Add product to order ---");
-            listProducts();
-
-            System.out.println("Enter product index (-1 to finish) : ");
-            int index = Integer.parseInt(scanner.nextLine());
-
-            if (index == -1) break;
-
-            System.out.print("Quantity: ");
-            int qty = Integer.parseInt(scanner.nextLine());
-
-            Product p = products.get(index);
-
-            order.addItem(p, qty);
-        }
-
-        orders.add(order);
-
-        System.out.println("Order created:");
-        System.out.println(order);
-        System.out.println("Total : " + order.getTotalPrice());
-    }
-
-    private static void listProducts() {
-        for (int i = 0; i < products.size(); i++) {
-            System.out.println(i + ". " + products.get(i));
-        }
-    }
-
-    private static void listOrders() {
-        for (Order o : orders) {
-            System.out.println(o);
-        }
+            frame.setVisible(true);
+        });
     }
 }

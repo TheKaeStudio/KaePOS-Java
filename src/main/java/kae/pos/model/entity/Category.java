@@ -1,8 +1,9 @@
 package kae.pos.model.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Category {
+public class Category implements Serializable {
 
     private static int currentId = 1;
 
@@ -12,6 +13,10 @@ public class Category {
     public Category(String name) {
         this.id = currentId++;
         setName(name);
+    }
+
+    public static void setCurrentId(int value) {
+        currentId = value;
     }
 
     public int getId() {

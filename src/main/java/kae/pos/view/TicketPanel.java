@@ -6,11 +6,12 @@ import java.awt.*;
 
 public class TicketPanel extends JPanel {
 
-    private static final String[] COLUMNS = {"ID", "Nb items", "Total (€)"};
+    private static final String[] COLUMNS = {"ID", "Date", "Content", "Total (€)"};
 
     private DefaultTableModel tableModel;
     private JTable table;
     private JButton btnDelete;
+    private JButton btnExportCsv;
 
     public TicketPanel() {
         setLayout(new BorderLayout(0, 8));
@@ -25,14 +26,16 @@ public class TicketPanel extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getTableHeader().setReorderingAllowed(false);
 
-        int[] widths = {60, 100, 100};
+        int[] widths = {50, 100, 280, 90};
         for (int i = 0; i < widths.length; i++)
             table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
 
         btnDelete = new JButton("Delete");
+        btnExportCsv = new JButton("Export to CSV");
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottom.add(btnDelete);
+        bottom.add(btnExportCsv);
 
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(bottom, BorderLayout.SOUTH);
@@ -50,5 +53,6 @@ public class TicketPanel extends JPanel {
 
     public int getSelectedRow() { return table.getSelectedRow(); }
     public JButton getBtnDelete() { return btnDelete; }
+    public JButton getBtnExportCsv() { return btnExportCsv; }
     public JTable getTable() { return table; }
 }

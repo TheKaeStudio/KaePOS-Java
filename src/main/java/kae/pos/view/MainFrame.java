@@ -12,14 +12,17 @@ public class MainFrame extends JFrame {
     public static final int TAB_TICKETS = 2;
     public static final int TAB_EMPLOYEES = 3;
 
+    private static final String CARD_LOCKED = "locked";
+    private static final String CARD_MAIN = "main";
+
     private JMenu menuFile;
-    private JMenuItem miSave;
     private JMenuItem miQuit;
 
     private JMenu menuAccount;
     private JMenuItem miLogin;
     private JMenuItem miLogout;
 
+    private JPanel cardPanel;
     private JTabbedPane tabbedPane;
     private CashierPanel cashierPanel;
     private ProductPanel productPanel;
@@ -33,6 +36,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(900, 600));
 
+        setAppIcon();
         buildMenuBar();
         buildUI();
         applyInitialState();
@@ -44,11 +48,8 @@ public class MainFrame extends JFrame {
     private void buildMenuBar() {
         JMenuBar bar = new JMenuBar();
 
-        menuFile = new JMenu("File");
-        miSave = new JMenuItem("Save");
+        menuFile = new JMenu("Menu");
         miQuit = new JMenuItem("Quit");
-        menuFile.add(miSave);
-        menuFile.addSeparator();
         menuFile.add(miQuit);
         bar.add(menuFile);
 
@@ -79,28 +80,41 @@ public class MainFrame extends JFrame {
         tabbedPane.addTab("Tickets", ticketPanel);
         tabbedPane.addTab("Employees", employeePanel);
 
-        setContentPane(tabbedPane);
+        JPanel lockedPanel = new JPanel(new GridBagLayout());
+        JLabel lockedLabel = new JLabel("Please log in to use the application.");
+        lockedLabel.setFont(lockedLabel.getFont().deriveFont(Font.ITALIC, 16f));
+        lockedPanel.add(lockedLabel);
+
+        cardPanel = new JPanel(new CardLayout());
+        cardPanel.add(lockedPanel, CARD_LOCKED);
+        cardPanel.add(tabbedPane, CARD_MAIN);
+
+        setContentPane(cardPanel);
+    }
+
+    private void setAppIcon() {
+        java.net.URL iconUrl = getClass().getResource("/icon.png");
+        if (iconUrl != null) {
+            setIconImage(new ImageIcon(iconUrl).getImage());
+        } else {
+            System.err.println("Icon not found: /icon.png");
+        }
     }
 
     public void applyInitialState() {
         miLogin.setEnabled(true);
         miLogout.setEnabled(false);
-        miSave.setEnabled(false);
-        for (int i = 0; i < tabbedPane.getTabCount(); i++)
-            tabbedPane.setEnabledAt(i, false);
         labelUser.setText("Not logged in");
+        ((CardLayout) cardPanel.getLayout()).show(cardPanel, CARD_LOCKED);
     }
 
     public void applyConnectedState(String username, boolean isManager) {
         miLogin.setEnabled(false);
         miLogout.setEnabled(true);
-        miSave.setEnabled(true);
-        tabbedPane.setEnabledAt(TAB_CASHIER, true);
-        tabbedPane.setEnabledAt(TAB_PRODUCTS, true);
-        tabbedPane.setEnabledAt(TAB_TICKETS, true);
         tabbedPane.setEnabledAt(TAB_EMPLOYEES, isManager);
         tabbedPane.setSelectedIndex(TAB_CASHIER);
         labelUser.setText(username + " [" + (isManager ? "Manager" : "Cashier") + "]");
+        ((CardLayout) cardPanel.getLayout()).show(cardPanel, CARD_MAIN);
     }
 
     public CashierPanel getCashierPanel() { return cashierPanel; }
@@ -108,7 +122,6 @@ public class MainFrame extends JFrame {
     public TicketPanel getTicketPanel() { return ticketPanel; }
     public EmployeePanel getEmployeePanel() { return employeePanel; }
     public JTabbedPane getTabbedPane() { return tabbedPane; }
-    public JMenuItem getMiSave() { return miSave; }
     public JMenuItem getMiQuit() { return miQuit; }
     public JMenuItem getMiLogin() { return miLogin; }
     public JMenuItem getMiLogout() { return miLogout; }
@@ -117,28 +130,6 @@ public class MainFrame extends JFrame {
         FlatDarkLaf.setup();
         SwingUtilities.invokeLater(() -> {
             MainFrame f = new MainFrame();
-
-            f.getProductPanel().refreshTable(new Object[][]{
-                    {1, "Coca-Cola", "Drinks", "1.80", "Yes"},
-                    {2, "Lay's Chips", "Snacks", "2.50", "Yes"},
-            });
-            f.getCashierPanel().refreshCatalogue(new Object[][]{
-                    {"Coca-Cola", "Drinks", "1.80"},
-                    {"Lay's Chips", "Snacks", "2.50"},
-            });
-            f.getTicketPanel().refreshTable(new Object[][]{
-                    {1, 3, "7.38"},
-                    {2, 5, "21.78"},
-            });
-            f.getEmployeePanel().refreshTable(new Object[][]{
-                    {1, "admin", "Manager"},
-                    {2, "ali", "Cashier"},
-            });
-
-            Timer t = new Timer(600, e -> f.applyConnectedState("admin", true));
-            t.setRepeats(false);
-            t.start();
-
             f.setVisible(true);
         });
     }

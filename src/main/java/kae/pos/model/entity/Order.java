@@ -1,10 +1,11 @@
 package kae.pos.model.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
 
     private static int currentId = 1;
 
@@ -16,6 +17,10 @@ public class Order {
         this.id = currentId++;
         this.items = new ArrayList<>();
         this.date = LocalDate.now();
+    }
+
+    public static void setCurrentId(int value) {
+        currentId = value;
     }
 
     public int getId() {

@@ -1,5 +1,7 @@
 package kae.pos.model.entity;
 
+import java.io.Serializable;
+
 public class Employee extends User {
 
     private Role role;

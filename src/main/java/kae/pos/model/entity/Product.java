@@ -1,8 +1,9 @@
 package kae.pos.model.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Product {
+public class Product implements Serializable {
     private static int currentId = 1;
 
     private int id;
@@ -19,6 +20,10 @@ public class Product {
         setPrice(price);
         setStock(true);
         this.image = null;
+    }
+
+    public static void setCurrentId(int value) {
+        currentId = value;
     }
 
     public int getId() { return id; }

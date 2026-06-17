@@ -1,6 +1,8 @@
 package kae.pos.model.entity;
 
-public class OrderItem {
+import java.io.Serializable;
+
+public class OrderItem implements Serializable {
 
     private Product product;
     private int quantity;
