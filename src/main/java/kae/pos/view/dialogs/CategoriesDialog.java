@@ -1,24 +1,22 @@
-package kae.pos.view;
+package kae.pos.view.dialogs;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-public class ProductPanel extends JPanel {
+public class CategoriesDialog extends JDialog {
 
-    private static final String[] COLUMNS = {"ID", "Name", "Category", "Price (€)", "In stock"};
+    private static final String[] COLUMNS = {"ID", "Name"};
 
     private DefaultTableModel tableModel;
     private JTable table;
-    private JComboBox<String> comboCategory;
     private JButton btnAdd;
-    private JButton btnEdit;
     private JButton btnDelete;
-    private JButton btnManageCategories;
+    private JButton btnClose;
 
-    public ProductPanel() {
-        setLayout(new BorderLayout(0, 8));
-        setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+    public CategoriesDialog(Frame parent) {
+        super(parent, "Manage categories", true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         tableModel = new DefaultTableModel(COLUMNS, 0) {
             @Override
@@ -29,26 +27,26 @@ public class ProductPanel extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getTableHeader().setReorderingAllowed(false);
 
-        int[] widths = {40, 180, 110, 80, 70};
-        for (int i = 0; i < widths.length; i++)
-            table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
-
-        comboCategory = new JComboBox<>();
         btnAdd = new JButton("Add");
-        btnEdit = new JButton("Edit");
         btnDelete = new JButton("Delete");
-        btnManageCategories = new JButton("Manage Categories");
+        btnClose = new JButton("Close");
+        btnClose.addActionListener(e -> setVisible(false));
 
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        toolbar.add(new JLabel("Category:"));
-        toolbar.add(comboCategory);
         toolbar.add(btnAdd);
-        toolbar.add(btnEdit);
         toolbar.add(btnDelete);
-        toolbar.add(btnManageCategories);
 
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottom.add(btnClose);
+
+        setLayout(new BorderLayout(0, 8));
+        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         add(toolbar, BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
+        add(bottom, BorderLayout.SOUTH);
+
+        setSize(400, 350);
+        setLocationRelativeTo(parent);
     }
 
     public void refreshTable(Object[][] data) {
@@ -56,22 +54,13 @@ public class ProductPanel extends JPanel {
         for (Object[] row : data) tableModel.addRow(row);
     }
 
-    public void setCategoryItems(String[] items) {
-        comboCategory.removeAllItems();
-        comboCategory.addItem("All");
-        for (String item : items) comboCategory.addItem(item);
-    }
-
     public Object getSelectedId() {
         int row = table.getSelectedRow();
         return (row >= 0) ? tableModel.getValueAt(row, 0) : null;
     }
 
-    public int getSelectedRow() { return table.getSelectedRow(); }
     public JButton getBtnAdd() { return btnAdd; }
-    public JButton getBtnEdit() { return btnEdit; }
     public JButton getBtnDelete() { return btnDelete; }
-    public JButton getBtnManageCategories() { return btnManageCategories; }
-    public JComboBox<String> getComboCategory() { return comboCategory; }
+    public JButton getBtnClose() { return btnClose; }
     public JTable getTable() { return table; }
 }
