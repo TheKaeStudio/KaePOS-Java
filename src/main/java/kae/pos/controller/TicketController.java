@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TicketController {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final TicketPanel panel;
     private final OrderDao orderDao;

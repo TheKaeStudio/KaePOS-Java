@@ -35,7 +35,7 @@ public class Main {
             new AppController(frame);
 
             TicketController ticketController = new TicketController(frame.getTicketPanel(), orderDao);
-            CashierController cashierController = new CashierController(frame.getCashierPanel(), productDao,
+            CashierController cashierController = new CashierController(frame, frame.getCashierPanel(), productDao,
                     orderDao, categoryDao, ticketController::refreshTable);
 
             new CategoryController(frame, frame.getProductPanel(), categoryDao,

@@ -7,6 +7,7 @@ import kae.pos.model.entity.Category;
 import kae.pos.model.entity.Order;
 import kae.pos.model.entity.Product;
 import kae.pos.view.CashierPanel;
+import kae.pos.view.MainFrame;
 
 import javax.swing.*;
 import java.util.List;
@@ -21,7 +22,7 @@ public class CashierController {
 
     private Order currentOrder;
 
-    public CashierController(CashierPanel panel, ProductDao productDao, OrderDao orderDao,
+    public CashierController(MainFrame frame, CashierPanel panel, ProductDao productDao, OrderDao orderDao,
                              CategoryDao categoryDao, Runnable onOrderCompleted) {
         this.panel = panel;
         this.productDao = productDao;
@@ -35,6 +36,13 @@ public class CashierController {
         panel.getBtnCheckout().addActionListener(e -> checkout());
         panel.getBtnCancel().addActionListener(e -> cancelOrder());
         panel.getComboCategory().addActionListener(e -> refreshCatalogue());
+
+        frame.getTabbedPane().addChangeListener(e -> {
+            if (frame.getTabbedPane().getSelectedIndex() == MainFrame.TAB_CASHIER) {
+                refreshCategoryCombo();
+                refreshCatalogue();
+            }
+        });
 
         refreshCategoryCombo();
         refreshCatalogue();

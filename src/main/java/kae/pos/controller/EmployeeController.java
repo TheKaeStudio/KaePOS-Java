@@ -59,15 +59,29 @@ public class EmployeeController {
                     "No selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        int id = (int) selectedId;
+        Employee employee = employeeDao.findById(id);
+        if (employee == null) return;
+
+        if (employee.isManager() && countManagers() <= 1) {
+            JOptionPane.showMessageDialog(panel,
+                    "Cannot delete the last manager. At least one manager must remain.",
+                    "Action blocked", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         int confirm = JOptionPane.showConfirmDialog(panel, "Delete this employee?",
                 "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            int id = (int) selectedId;
-            Employee employee = employeeDao.findById(id);
-            if (employee != null) authenticator.removeUser(employee.getUsername());
+            authenticator.removeUser(employee.getUsername());
             employeeDao.delete(id);
             refreshTable();
         }
+    }
+
+    private long countManagers() {
+        return employeeDao.findAll().stream().filter(Employee::isManager).count();
     }
 
     private void refreshTable() {
@@ -81,4 +95,6 @@ public class EmployeeController {
         }
         panel.refreshTable(data);
     }
+
+
 }

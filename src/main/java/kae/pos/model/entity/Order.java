@@ -1,10 +1,9 @@
 package kae.pos.model.entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Order implements Serializable {
 
@@ -12,12 +11,12 @@ public class Order implements Serializable {
 
     private int id;
     private List<OrderItem> items;
-    private LocalDate date;
+    private LocalDateTime date;
 
     public Order() {
         this.id = currentId++;
         this.items = new ArrayList<>();
-        this.date = LocalDate.now();
+        this.date = LocalDateTime.now();
     }
 
     public static void setCurrentId(int value) {
@@ -32,7 +31,7 @@ public class Order implements Serializable {
         return items;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
@@ -65,13 +64,7 @@ public class Order implements Serializable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Order)) return false;
-
         Order other = (Order) obj;
         return this.id == other.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
